@@ -2,12 +2,13 @@ package supervisor
 
 import (
 	"fmt"
-	"github.com/caddyserver/caddy/v2/caddyconfig"
-	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
-	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/caddyserver/caddy/v2/caddyconfig"
+	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
+	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 )
 
 func init() {
@@ -35,7 +36,9 @@ func parseSupervisor(d *caddyfile.Dispenser, _ interface{}) (interface{}, error)
 
 	// handle the block, can have more than one command defined
 	for d.NextBlock(0) {
-		def := Definition{}
+		def := Definition{
+			Replicas: 1,
+		}
 
 		def.Command = append([]string{d.Val()}, d.RemainingArgs()...)
 

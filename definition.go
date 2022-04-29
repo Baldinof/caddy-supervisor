@@ -3,10 +3,11 @@ package supervisor
 import (
 	"errors"
 	"fmt"
-	"go.uber.org/zap"
 	"os/user"
 	"strings"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 // Definition is the configuration for process to supervise
@@ -15,7 +16,7 @@ type Definition struct {
 	// Supports template.
 	Command []string `json:"command"`
 	// Replicas control how many instances of Command should run.
-	Replicas int `json:"replicas,omitempty"`
+	Replicas int `json:"replicas"`
 	// Dir defines the working directory the command should be executed in.
 	// Supports template.
 	// Default: current working dir
@@ -73,16 +74,12 @@ func (d Definition) ToSupervisors(logger *zap.Logger) ([]*Supervisor, error) {
 	}
 
 	if d.User != "" {
-		if _,err  := user.Lookup(d.User); err != nil {
+		if _, err := user.Lookup(d.User); err != nil {
 			return supervisors, err
 		}
 	}
 
 	replicas := d.Replicas
-
-	if replicas == 0 {
-		replicas = 1
-	}
 
 	if opts.RestartPolicy == "" {
 		opts.RestartPolicy = RestartAlways
