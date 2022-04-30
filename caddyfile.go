@@ -36,9 +36,7 @@ func parseSupervisor(d *caddyfile.Dispenser, _ interface{}) (interface{}, error)
 
 	// handle the block, can have more than one command defined
 	for d.NextBlock(0) {
-		def := Definition{
-			Replicas: 1,
-		}
+		def := Definition{}
 
 		def.Command = append([]string{d.Val()}, d.RemainingArgs()...)
 
@@ -106,7 +104,7 @@ func parseSupervisor(d *caddyfile.Dispenser, _ interface{}) (interface{}, error)
 					return nil, d.Errf("'replicas' should be a positive integer, '%s' given", replicas)
 				}
 
-				def.Replicas = r
+				def.Replicas = &r
 			case "env":
 				var envKey, envValue string
 

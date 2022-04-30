@@ -16,7 +16,7 @@ type Definition struct {
 	// Supports template.
 	Command []string `json:"command"`
 	// Replicas control how many instances of Command should run.
-	Replicas int `json:"replicas"`
+	Replicas *int `json:"replicas,omitempty"`
 	// Dir defines the working directory the command should be executed in.
 	// Supports template.
 	// Default: current working dir
@@ -79,7 +79,13 @@ func (d Definition) ToSupervisors(logger *zap.Logger) ([]*Supervisor, error) {
 		}
 	}
 
-	replicas := d.Replicas
+	var replicas int
+
+	if d.Replicas == nil {
+		replicas = 1
+	} else {
+		replicas = *d.Replicas
+	}
 
 	if opts.RestartPolicy == "" {
 		opts.RestartPolicy = RestartAlways

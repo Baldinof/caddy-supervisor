@@ -30,8 +30,7 @@ func Test_parseSupervisor(t *testing.T) {
 				{
 					"supervise":[
 						{
-							"command":["php-fpm"],
-							"replicas": 1
+							"command":["php-fpm"]
 						}
 					]
 				}
@@ -48,8 +47,7 @@ func Test_parseSupervisor(t *testing.T) {
 				{
 					"supervise":[
 						{
-							"command":["php-fpm","--fpm-config=fpm-8.0.2.ini"],
-							"replicas": 1
+							"command":["php-fpm","--fpm-config=fpm-8.0.2.ini"]
 						}
 					]
 				}
@@ -67,12 +65,10 @@ func Test_parseSupervisor(t *testing.T) {
 				{
 					"supervise":[
 						{
-							"command":["php-fpm","--fpm-config=fpm-8.0.2.ini"],
-							"replicas": 1
+							"command":["php-fpm","--fpm-config=fpm-8.0.2.ini"]
 						},
 						{
-							"command":["node","worker.js"],
-							"replicas": 1
+							"command":["node","worker.js"]
 						}
 					]
 				}
@@ -98,8 +94,7 @@ func Test_parseSupervisor(t *testing.T) {
 								"HELLO_WORLD":"world", 
 								"FOO": "bar baz",
 								"BAR": "foo baz"
-							},
-							"replicas": 1
+							}
 						}
 					]
 				}
@@ -132,8 +127,7 @@ func Test_parseSupervisor(t *testing.T) {
 						{
 							"command":["php-fpm","--fpm-config=fpm-8.0.2.ini"],
 							"redirect_stdout": {"type": "file", "file": "fpm-stdout.log"},
-							"redirect_stderr": {"type": "file", "file": "fpm-stderr.log"},
-							"replicas": 1
+							"redirect_stderr": {"type": "file", "file": "fpm-stderr.log"}
 						}
 					]
 				}
@@ -155,8 +149,7 @@ func Test_parseSupervisor(t *testing.T) {
 						{
 							"command":["php-fpm","--fpm-config=fpm-8.0.2.ini"],
 							"redirect_stdout": {"type": "stdout"},
-							"redirect_stderr": {"type": "stderr"},
-							"replicas": 1
+							"redirect_stderr": {"type": "stderr"}
 						}
 					]
 				}
@@ -176,8 +169,7 @@ func Test_parseSupervisor(t *testing.T) {
 					"supervise": [
 						{
 							"command":["php-fpm","--fpm-config=fpm-8.0.2.ini"],
-							"redirect_stdout": {"type": "null"},
-							"replicas": 1
+							"redirect_stdout": {"type": "null"}
 						}
 					]
 				}
@@ -219,8 +211,7 @@ func Test_parseSupervisor(t *testing.T) {
 					"supervise": [
 						{
 							"command":["php-fpm","--fpm-config=fpm-8.0.2.ini"],
-							"user": "www-data",
-							"replicas": 1
+							"user": "www-data"
 						}
 					]
 				}
@@ -313,8 +304,7 @@ func Test_parseSupervisor(t *testing.T) {
 					"supervise": [
 						{
 							"command":["php-fpm","--fpm-config=fpm-8.0.2.ini"],
-							"restart_policy": "always",
-							"replicas": 1
+							"restart_policy": "always"
 						}
 					]
 				}
@@ -334,8 +324,7 @@ func Test_parseSupervisor(t *testing.T) {
 					"supervise": [
 						{
 							"command":["php-fpm","--fpm-config=fpm-8.0.2.ini"],
-							"restart_policy": "on_failure",
-							"replicas": 1
+							"restart_policy": "on_failure"
 						}
 					]
 				}
@@ -377,8 +366,7 @@ func Test_parseSupervisor(t *testing.T) {
 					"supervise": [
 						{
 							"command":["php-fpm","--fpm-config=fpm-8.0.2.ini"],
-							"termination_grace_period": "3m",
-							"replicas": 1
+							"termination_grace_period": "3m"
 						}
 					]
 				}
@@ -420,8 +408,7 @@ func Test_parseSupervisor(t *testing.T) {
 					"supervise": [
 						{
 							"command":["php-fpm","--fpm-config=fpm-8.0.2.ini"],
-							"dir": "/src",
-							"replicas": 1
+							"dir": "/src"
 						}
 					]
 				}
