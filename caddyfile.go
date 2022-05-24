@@ -2,12 +2,13 @@ package supervisor
 
 import (
 	"fmt"
-	"github.com/caddyserver/caddy/v2/caddyconfig"
-	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
-	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/caddyserver/caddy/v2/caddyconfig"
+	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
+	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 )
 
 func init() {
@@ -103,7 +104,7 @@ func parseSupervisor(d *caddyfile.Dispenser, _ interface{}) (interface{}, error)
 					return nil, d.Errf("'replicas' should be a positive integer, '%s' given", replicas)
 				}
 
-				def.Replicas = r
+				def.Replicas = &r
 			case "env":
 				var envKey, envValue string
 

@@ -2,13 +2,14 @@ package supervisor
 
 import (
 	"fmt"
-	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
-	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
-	"github.com/stretchr/testify/assert"
 	"path/filepath"
 	"reflect"
 	"runtime"
 	"testing"
+
+	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
+	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_parseSupervisor(t *testing.T) {
@@ -231,6 +232,26 @@ func Test_parseSupervisor(t *testing.T) {
 						{
 							"command":["php-fpm","--fpm-config=fpm-8.0.2.ini"],
 							"replicas": 3
+						}
+					]
+				}
+			`,
+		},
+		{
+			name: "replicas zero",
+			givenCaddyfile: `
+				supervisor {
+				  php-fpm --fpm-config=fpm-8.0.2.ini {
+					replicas 0
+				  }
+				}
+			`,
+			expectJson: `
+				{
+					"supervise": [
+						{
+							"command":["php-fpm","--fpm-config=fpm-8.0.2.ini"],
+							"replicas": 0
 						}
 					]
 				}
