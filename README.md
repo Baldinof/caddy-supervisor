@@ -14,7 +14,7 @@ For every process in the **supervisor** caddyfile directive a command is execute
 {
   # Must be in global options
   supervisor {
-    php-fpm --no-daemonize {
+    php-fpm --nodaemonize {
       dir /path/to/desired/working-dir # default to current dir
       
       env APP_ENV production
