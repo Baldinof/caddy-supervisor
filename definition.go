@@ -38,7 +38,8 @@ type Definition struct {
 	TerminationGracePeriod string `json:"termination_grace_period,omitempty"`
 	// User defines the user which executes the Command.
 	// Default: current user
-	User string `json:"user,omitempty"`
+	User       string `json:"user,omitempty"`
+	StopSignal string `json:"stop_signal,omitempty"`
 }
 
 type OutputTarget struct {
@@ -71,6 +72,7 @@ func (d Definition) ToSupervisors(logger *zap.Logger) ([]*Supervisor, error) {
 		Env:           d.envToCmdArg(),
 		RestartPolicy: d.RestartPolicy,
 		User:          d.User,
+		StopSignal:    signalNameToSignal(d.StopSignal),
 	}
 
 	if d.User != "" {
