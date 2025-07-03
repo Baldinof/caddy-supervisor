@@ -58,6 +58,7 @@ mysite.com
 - **termination_grace_period**: amount of time to wait for application graceful termination before killing it. Ex: 10s
 - **replicas**: number of instances that should be executed. Default: 1.
 - **user**: the user that runs the command. _Ignored on windows systems_
+- **stop_signal**: signal, that should be sent to the process, if caddy receives a termination request. Start with `SIG`, e.g. `SIGTERM`, `SIGQUIT`. Defaults to `SIGINT` if not set or invalid value. _Ignored on windows systems_
 
 On windows **termination_grace_period** is ignored and the command is killed immediatelly due to lack of signals support.
 
