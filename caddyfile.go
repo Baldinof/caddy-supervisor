@@ -17,15 +17,16 @@ func init() {
 
 // parseSupervisor configures the "exec" global option from Caddyfile.
 // Syntax:
-//  supervisor {
-//		php-fpm -d /etc/php-fpm/config.ini {
-//	    	dir /home/user
-//			redirect_stdout stdout
-//			redirect_stderr stderr
-//			restart_policy always
-//			env MAX_CHILDREN 5
-//	  	}
-//  }
+//
+//	 supervisor {
+//			php-fpm -d /etc/php-fpm/config.ini {
+//		    	dir /home/user
+//				redirect_stdout stdout
+//				redirect_stderr stderr
+//				restart_policy always
+//				env MAX_CHILDREN 5
+//		  	}
+//	 }
 func parseSupervisor(d *caddyfile.Dispenser, _ interface{}) (interface{}, error) {
 	app := new(App)
 
@@ -49,6 +50,10 @@ func parseSupervisor(d *caddyfile.Dispenser, _ interface{}) (interface{}, error)
 			switch d.Val() {
 			case "dir":
 				if !d.Args(&def.Dir) {
+					return nil, d.ArgErr()
+				}
+			case "stop_signal":
+				if !d.Args(&def.StopSignal) {
 					return nil, d.ArgErr()
 				}
 			case "redirect_stdout":

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 	"text/template"
 	"time"
@@ -23,6 +24,7 @@ type Options struct {
 	RestartPolicy          RestartPolicy
 	TerminationGracePeriod time.Duration
 	User                   string
+	StopSignal             os.Signal
 }
 
 // RestartPolicy determines when a supervised process should be restarted
@@ -70,6 +72,7 @@ func (options Options) processTemplates() (Options, error) {
 	result.RedirectStderr = options.RedirectStderr
 	result.RestartPolicy = options.RestartPolicy
 	result.TerminationGracePeriod = options.TerminationGracePeriod
+	result.StopSignal = options.StopSignal
 
 	if len(tplErrors) > 0 {
 		return result, errors.New("failed to process templates: \n" + strings.Join(tplErrors, "\n"))

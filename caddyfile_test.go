@@ -109,7 +109,7 @@ func Test_parseSupervisor(t *testing.T) {
 				  }
 				}
 			`,
-			expectError: "Testfile:4 - Error during parsing: Wrong argument count or unexpected line ending after 'HELLO_WORLD'",
+			expectError: "wrong argument count or unexpected line ending after 'HELLO_WORLD', at Testfile:4",
 		},
 		{
 			name: "output redirections to file",
@@ -184,7 +184,7 @@ func Test_parseSupervisor(t *testing.T) {
 				  }
 				}
 			`,
-			expectError: "Testfile:4 - Error during parsing: Wrong argument count or unexpected line ending after 'redirect_stdout'",
+			expectError: "wrong argument count or unexpected line ending after 'redirect_stdout', at Testfile:4",
 		},
 		{
 			name: "redirect_stderr error",
@@ -195,7 +195,7 @@ func Test_parseSupervisor(t *testing.T) {
 				  }
 				}
 			`,
-			expectError: "Testfile:4 - Error during parsing: Wrong argument count or unexpected line ending after 'redirect_stderr'",
+			expectError: "wrong argument count or unexpected line ending after 'redirect_stderr', at Testfile:4",
 		},
 		{
 			name: "user is provided",
@@ -266,7 +266,7 @@ func Test_parseSupervisor(t *testing.T) {
 				  }
 				}
 			`,
-			expectError: "Testfile:4 - Error during parsing: Wrong argument count or unexpected line ending after 'replicas'",
+			expectError: "wrong argument count or unexpected line ending after 'replicas', at Testfile:4",
 		},
 		{
 			name: "replicas negative int",
@@ -277,7 +277,7 @@ func Test_parseSupervisor(t *testing.T) {
 				  }
 				}
 			`,
-			expectError: "Testfile:4 - Error during parsing: 'replicas' should be a positive integer, '-1' given",
+			expectError: "'replicas' should be a positive integer, '-1' given, at Testfile:4",
 		},
 		{
 			name: "replicas not parsable int",
@@ -288,7 +288,7 @@ func Test_parseSupervisor(t *testing.T) {
 				  }
 				}
 			`,
-			expectError: "Testfile:4 - Error during parsing: 'replicas' should be a positive integer, 'hello' given",
+			expectError: "'replicas' should be a positive integer, 'hello' given, at Testfile:4",
 		},
 		{
 			name: "restart policy 'always'",
@@ -331,6 +331,26 @@ func Test_parseSupervisor(t *testing.T) {
 			`,
 		},
 		{
+			name: "stop signal parsing",
+			givenCaddyfile: `
+				supervisor {
+				  php-fpm --fpm-config=fpm-8.0.2.ini {
+				    stop_signal SIGQUIT
+				  }
+				}
+			`,
+			expectJson: `
+				{
+					"supervise": [
+						{
+							"command":["php-fpm","--fpm-config=fpm-8.0.2.ini"],
+							"stop_signal": "SIGQUIT"
+						}
+					]
+				}
+			`,
+		},
+		{
 			name: "restart policy wrong arguments count",
 			givenCaddyfile: `
 				supervisor {
@@ -339,7 +359,7 @@ func Test_parseSupervisor(t *testing.T) {
 				  }
 				}
 			`,
-			expectError: "Testfile:4 - Error during parsing: Wrong argument count or unexpected line ending after 'restart_policy'",
+			expectError: "wrong argument count or unexpected line ending after 'restart_policy', at Testfile:4",
 		},
 		{
 			name: "restart policy invalid",
@@ -350,7 +370,7 @@ func Test_parseSupervisor(t *testing.T) {
 				  }
 				}
 			`,
-			expectError: "Testfile:4 - Error during parsing: 'restart_policy' should be either 'always', 'never', or 'on_failure': 'foo' given",
+			expectError: "'restart_policy' should be either 'always', 'never', or 'on_failure': 'foo' given, at Testfile:4",
 		},
 		{
 			name: "termination_grace_period",
@@ -381,7 +401,7 @@ func Test_parseSupervisor(t *testing.T) {
 				  }
 				}
 			`,
-			expectError: "Testfile:4 - Error during parsing: Wrong argument count or unexpected line ending after 'termination_grace_period'",
+			expectError: "wrong argument count or unexpected line ending after 'termination_grace_period', at Testfile:4",
 		},
 		{
 			name: "termination_grace_period not parsable duration",
@@ -392,7 +412,7 @@ func Test_parseSupervisor(t *testing.T) {
 				  }
 				}
 			`,
-			expectError: "Testfile:4 - Error during parsing: cannot parse 'termination_grace_period' into time.Duration, 'foo' given",
+			expectError: "cannot parse 'termination_grace_period' into time.Duration, 'foo' given, at Testfile:4",
 		},
 		{
 			name: "dir",
@@ -423,7 +443,7 @@ func Test_parseSupervisor(t *testing.T) {
 				  }
 				}
 			`,
-			expectError: "Testfile:4 - Error during parsing: Wrong argument count or unexpected line ending after 'dir'",
+			expectError: "wrong argument count or unexpected line ending after 'dir', at Testfile:4",
 		},
 	}
 

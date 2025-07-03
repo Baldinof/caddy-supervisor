@@ -1,12 +1,16 @@
+//go:build !windows
 // +build !windows
 
 package supervisor
 
 import (
+	"os"
 	"os/exec"
 	"os/user"
 	"strconv"
 	"syscall"
+
+	"golang.org/x/sys/unix"
 )
 
 func configureSysProcAttr(cmd *exec.Cmd) {
@@ -18,10 +22,10 @@ func configureSysProcAttr(cmd *exec.Cmd) {
 
 func configureExecutingUser(cmd *exec.Cmd, username string) {
 	if username != "" {
-		currentUser,_ := user.Current()
+		currentUser, _ := user.Current()
 
 		if currentUser.Username != username {
-			executingUser,_ := user.Lookup(username)
+			executingUser, _ := user.Lookup(username)
 
 			uid, _ := strconv.Atoi(executingUser.Uid)
 			gid, _ := strconv.Atoi(executingUser.Gid)
@@ -32,4 +36,13 @@ func configureExecutingUser(cmd *exec.Cmd, username string) {
 			}
 		}
 	}
+}
+
+func signalNameToSignal(signalName string) os.Signal {
+	resolvedSignal := unix.SignalNum(signalName)
+	if resolvedSignal != 0 {
+		return resolvedSignal
+	}
+
+	return os.Interrupt
 }
