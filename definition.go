@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os/user"
+	"sort"
 	"strings"
 	"time"
 
@@ -40,6 +41,13 @@ type Definition struct {
 	// Default: current user
 	User       string `json:"user,omitempty"`
 	StopSignal string `json:"stop_signal,omitempty"`
+	// OnReload defines what happens to a running Command when the Caddy config is reloaded. Any config change does
+	// that, including changes made through the admin API.
+	// Valid values:
+	//  - **restart**: stop the command and start it again, with every reload (default)
+	//  - **keep**: leave the command running if its definition did not change; it is stopped when it is removed
+	//    from the config or changed
+	OnReload OnReload `json:"on_reload,omitempty"`
 }
 
 type OutputTarget struct {
@@ -73,6 +81,15 @@ func (d Definition) ToSupervisors(logger *zap.Logger) ([]*Supervisor, error) {
 		RestartPolicy: d.RestartPolicy,
 		User:          d.User,
 		StopSignal:    signalNameToSignal(d.StopSignal),
+		OnReload:      d.OnReload,
+	}
+
+	if opts.OnReload == "" {
+		opts.OnReload = OnReloadRestart
+	}
+
+	if opts.OnReload != OnReloadRestart && opts.OnReload != OnReloadKeep {
+		return supervisors, fmt.Errorf("unsupported on_reload '%s' of supervisor '%s', allowed: %s, %s", opts.OnReload, strings.Join(d.Command, " "), OnReloadRestart, OnReloadKeep)
 	}
 
 	if d.User != "" {
@@ -131,12 +148,9 @@ func (d Definition) ToSupervisors(logger *zap.Logger) ([]*Supervisor, error) {
 			return supervisors, err
 		}
 
-		supervisor := &Supervisor{
-			Options: templatedOpts,
-			logger: logger.
-				With(zap.Strings("command", d.Command)).
-				With(zap.Int("replica", templatedOpts.Replica)),
-		}
+		supervisor := newSupervisor(templatedOpts, logger.
+			With(zap.Strings("command", d.Command)).
+			With(zap.Int("replica", templatedOpts.Replica)))
 
 		supervisors = append(supervisors, supervisor)
 	}
@@ -152,6 +166,9 @@ func (d Definition) envToCmdArg() []string {
 		env[i] = fmt.Sprintf("%s=%s", key, value)
 		i++
 	}
+
+	// stable order: the environment is part of the identity of a process kept across reloads
+	sort.Strings(env)
 
 	return env
 }

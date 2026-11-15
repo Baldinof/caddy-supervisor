@@ -25,6 +25,26 @@ type Options struct {
 	TerminationGracePeriod time.Duration
 	User                   string
 	StopSignal             os.Signal
+	OnReload               OnReload
+}
+
+// OnReload determines what happens to a supervised process when the config is reloaded
+type OnReload string
+
+const (
+	// OnReloadRestart stops the process and starts it again with every config reload
+	OnReloadRestart = OnReload("restart")
+	// OnReloadKeep leaves the process running across config reloads as long as its definition is unchanged
+	OnReloadKeep = OnReload("keep")
+)
+
+// key identifies the process an Options value describes. Two configs with the same key mean the same process.
+func (options Options) key() string {
+	return fmt.Sprintf("%q", []interface{}{
+		options.Command, options.Args, options.Replica, options.Dir, options.Env,
+		options.RedirectStdout.string(), options.RedirectStderr.string(), string(options.RestartPolicy),
+		options.TerminationGracePeriod.String(), options.User, fmt.Sprint(options.StopSignal),
+	})
 }
 
 // RestartPolicy determines when a supervised process should be restarted
@@ -73,6 +93,8 @@ func (options Options) processTemplates() (Options, error) {
 	result.RestartPolicy = options.RestartPolicy
 	result.TerminationGracePeriod = options.TerminationGracePeriod
 	result.StopSignal = options.StopSignal
+	result.Replica = options.Replica
+	result.OnReload = options.OnReload
 
 	if len(tplErrors) > 0 {
 		return result, errors.New("failed to process templates: \n" + strings.Join(tplErrors, "\n"))

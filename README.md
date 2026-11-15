@@ -30,6 +30,7 @@ For every process in the **supervisor** caddyfile directive a command is execute
       termination_grace_period 30s # default to '10s', amount of time to wait for application graceful termination before killing it
       
       replicas 3 # default to 1, number of instances that should be executed
+      on_reload restart # default to 'restart', other value allowed: 'keep'
     }
     
     # block configuration is optional    
@@ -57,6 +58,9 @@ mysite.com
   - **always**: always restart
 - **termination_grace_period**: amount of time to wait for application graceful termination before killing it. Ex: 10s
 - **replicas**: number of instances that should be executed. Default: 1.
+- **on_reload**: what happens to the running command when the Caddy config is reloaded. Every config change is a reload, including changes made through the admin API (dashboards and other tools do that). Default: `restart` Valid values:
+  - **restart**: stop the command and start it again with every reload. Caddy starts the new config before it stops the previous one, so for a moment both instances run - a command listening on a port fails once and is restarted.
+  - **keep**: leave the command running as long as its definition is unchanged. It is stopped when it is removed from the config or when its definition changes (the changed one is started as a new command).
 - **user**: the user that runs the command. _Ignored on windows systems_
 - **stop_signal**: signal, that should be sent to the process, if caddy receives a termination request. Start with `SIG`, e.g. `SIGTERM`, `SIGQUIT`. Defaults to `SIGINT` if not set or invalid value. _Ignored on windows systems_
 

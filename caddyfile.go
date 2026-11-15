@@ -25,6 +25,7 @@ func init() {
 //				redirect_stderr stderr
 //				restart_policy always
 //				env MAX_CHILDREN 5
+//				on_reload keep
 //		  	}
 //	 }
 func parseSupervisor(d *caddyfile.Dispenser, _ interface{}) (interface{}, error) {
@@ -128,6 +129,18 @@ func parseSupervisor(d *caddyfile.Dispenser, _ interface{}) (interface{}, error)
 				}
 
 				def.Env[envKey] = envValue
+			case "on_reload":
+				var r string
+
+				if !d.Args(&r) {
+					return nil, d.ArgErr()
+				}
+
+				if r != string(OnReloadRestart) && r != string(OnReloadKeep) {
+					return nil, d.Errf("'on_reload' should be either '%s' or '%s': '%s' given", OnReloadRestart, OnReloadKeep, r)
+				}
+
+				def.OnReload = OnReload(r)
 			case "user":
 				var user string
 
