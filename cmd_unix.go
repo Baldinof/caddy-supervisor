@@ -46,3 +46,8 @@ func signalNameToSignal(signalName string) os.Signal {
 
 	return os.Interrupt
 }
+
+// requestStop asks the process to stop by sending it the configured signal.
+func requestStop(cmd *exec.Cmd, signal os.Signal) error {
+	return cmd.Process.Signal(signal)
+}

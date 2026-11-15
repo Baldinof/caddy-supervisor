@@ -3,6 +3,7 @@ package supervisor
 import (
 	"fmt"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -16,6 +17,8 @@ import (
 const (
 	helperEnv = "SUPERVISOR_TEST_HELPER_MARKER"
 	waitFor   = 30 * time.Second
+	// the helper writes <marker><stoppedSuffix> when it was asked to stop instead of being killed
+	stoppedSuffix = ".stopped"
 )
 
 // TestMain lets the test binary act as the supervised process: started with helperEnv set, it records its pid in
@@ -28,7 +31,15 @@ func TestMain(m *testing.M) {
 		}
 		fmt.Fprintf(f, "%d\n", os.Getpid())
 		f.Close()
-		time.Sleep(time.Hour)
+
+		// asked to stop (SIGINT, on Windows Ctrl+Break): leave a trace and exit cleanly
+		interrupted := make(chan os.Signal, 1)
+		signal.Notify(interrupted, os.Interrupt)
+		select {
+		case <-interrupted:
+			_ = os.WriteFile(marker+stoppedSuffix, []byte("asked to stop"), 0o666)
+		case <-time.After(time.Hour):
+		}
 		os.Exit(0)
 	}
 
@@ -128,6 +139,19 @@ func TestSupervisor_StopWaitsUntilTheProcessIsGone(t *testing.T) {
 		t.Fatal("Stop() must not return before the process has exited")
 	}
 	assert.Len(t, startedPids(marker), 1, "a stopped process must not be restarted")
+}
+
+// The process gets the chance to shut down by itself before it is killed - on Windows too, where there are no
+// signals and the request is a Ctrl+Break sent to the process group of the command.
+func TestSupervisor_StopAsksTheProcessToStopBeforeKillingIt(t *testing.T) {
+	s, marker := helperSupervisor(t)
+	returned := runInBackground(s)
+	waitForStarts(t, marker, 1)
+
+	s.Stop()
+
+	<-returned
+	assert.FileExists(t, marker+stoppedSuffix, "the process must be asked to stop, not killed right away")
 }
 
 func TestSupervisor_StopInterruptsTheRestartDelay(t *testing.T) {

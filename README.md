@@ -64,7 +64,7 @@ mysite.com
 - **user**: the user that runs the command. _Ignored on windows systems_
 - **stop_signal**: signal, that should be sent to the process, if caddy receives a termination request. Start with `SIG`, e.g. `SIGTERM`, `SIGQUIT`. Defaults to `SIGINT` if not set or invalid value. _Ignored on windows systems_
 
-On windows **termination_grace_period** is ignored and the command is killed immediatelly due to lack of signals support.
+On windows there are no signals. The command is started in its own process group and asked to stop with a `Ctrl+Break` console event; it is killed when **termination_grace_period** is exceeded. Programs that handle the event shut down cleanly, the others are ended by the default handler. If Caddy runs without a console the event cannot be sent and the command is killed immediately.
 
 ## Templates
 To enable different configuration per replica, you can use go templates on the fields marked with _Supports template_".

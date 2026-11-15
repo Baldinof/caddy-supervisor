@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Graceful stop on Windows: the command runs in its own process group and is asked to stop with `Ctrl+Break`; `termination_grace_period` applies. It was killed immediately before.
 - `on_reload` option: `keep` leaves a command with an unchanged definition running across config reloads instead of restarting it.
 
 ### Fixed

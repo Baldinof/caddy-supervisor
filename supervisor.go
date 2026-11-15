@@ -196,9 +196,10 @@ func (s *Supervisor) Stop() {
 	}
 
 	if cmd != nil {
-		s.log().Debug("sending 'interrupt signal to gracefully stop the process")
+		s.log().Debug("asking the process to stop")
 
-		if err := cmd.Process.Signal(s.Options.StopSignal); err == nil {
+		// a signal on unix-like systems, Ctrl+Break to the process group of the command on Windows
+		if err := requestStop(cmd, s.Options.StopSignal); err == nil {
 			select {
 			case <-exited:
 				return
@@ -208,10 +209,10 @@ func (s *Supervisor) Stop() {
 					Info("termination grace period exceeded, killing")
 			}
 		} else {
-			// e.g. on Windows, where processes cannot be signaled
+			// e.g. on Windows when Caddy runs without a console
 			s.log().
 				With(zap.Error(err)).
-				Info("error while sending 'interup' signal, killing")
+				Info("cannot ask the process to stop, killing")
 		}
 
 		// an error means the process is already gone
