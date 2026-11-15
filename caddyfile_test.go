@@ -75,6 +75,37 @@ func Test_parseSupervisor(t *testing.T) {
 			`,
 		},
 		{
+			name: "on_reload keep",
+			givenCaddyfile: `
+				supervisor {
+				  redis-server redis.conf {
+					on_reload keep
+				  }
+				}
+			`,
+			expectJson: `
+				{
+					"supervise":[
+						{
+							"command":["redis-server","redis.conf"],
+							"on_reload":"keep"
+						}
+					]
+				}
+			`,
+		},
+		{
+			name: "on_reload invalid value",
+			givenCaddyfile: `
+				supervisor {
+				  redis-server redis.conf {
+					on_reload sometimes
+				  }
+				}
+			`,
+			expectError: "'on_reload' should be either 'restart' or 'keep': 'sometimes' given, at Testfile:4",
+		},
+		{
 			name: "env vars",
 			givenCaddyfile: `
 				supervisor {
